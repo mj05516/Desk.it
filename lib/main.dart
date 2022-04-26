@@ -14,9 +14,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Task.It : Not Just another TodoApp',
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
+      theme: ThemeData.dark().copyWith(
+        primaryColor: Colors.deepPurple,
       ),
+      // theme: ThemeData(
+      //   primarySwatch: Colors.deepPurple,
+      // ),
       // home: TodoListScreen(),
       home: SplashPage(),
     );

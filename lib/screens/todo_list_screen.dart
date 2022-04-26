@@ -83,6 +83,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w800,
             )),
+        backgroundColor: Colors.deepPurple,
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
@@ -125,7 +126,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
                         'Your ToDos',
                         style: TextStyle(
                           fontFamily: 'Poppins',
-                          color: Colors.black,
+                          color: Colors.white,
                           fontWeight: FontWeight.w800,
                           fontSize: 30,
                         ),
