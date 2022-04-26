@@ -43,11 +43,22 @@ class DatabaseHelper {
     return result;
   }
 
-  Future<List<Task>> getTaskList() async {
+  Future<List<Task>> getTaskList(String filter) async {
     final List<Map<String, dynamic>> taskMapList = await getMapTaskList();
     final List<Task> taskList = [];
     taskMapList.forEach((taskMap) {
+      if (filter == "All"){
       taskList.add(Task.fromMap(taskMap));
+      } else if (filter == "Completed"){
+        if (taskMap[colStatus] == 1){
+          taskList.add(Task.fromMap(taskMap));
+        }
+      } else if (filter == "Active"){
+        if (taskMap[colStatus] == 0){
+          taskList.add(Task.fromMap(taskMap));
+        }
+      }
+
     });
     taskList.sort((taskA, taskB) => taskA.date!.compareTo(taskB.date!));
     return taskList;

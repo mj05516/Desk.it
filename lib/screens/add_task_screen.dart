@@ -106,7 +106,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   height: 20.0,
                 ),
                 Text(
-                  widget.task == null ? 'Add Task' : 'Update Task',
+                  widget.task == null ? 'Add Your To Do' : 'Update Your To Do',
                   style: TextStyle(
                       fontFamily: 'ProximaNova',
                       color: Colors.black,
