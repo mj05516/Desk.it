@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+// import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:taskit/helpers/database_helper.dart';
@@ -12,17 +12,18 @@ class TodoListScreen extends StatefulWidget {
 
 class _TodoListScreenState extends State<TodoListScreen> {
   Future<List<Task>>? _taskList;
+  late String filter = "All";
   final DateFormat _dateFormatter = DateFormat('MMM dd, yyyy');
 
   @override
   void initState() {
     super.initState();
-    _updateTaskList();
+    _updateTaskList("All");
   }
 
-  _updateTaskList() {
+  _updateTaskList(String filter) {
     setState(() {
-      _taskList = DatabaseHelper.instance.getTaskList();
+      _taskList = DatabaseHelper.instance.getTaskList(filter);
     });
   }
 
@@ -35,7 +36,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
             title: Text(
               task.title!,
               style: TextStyle(
-                  fontFamily: 'ProximaNova',
+                  fontFamily: 'Poppins',
                   fontWeight: FontWeight.w800,
                   fontSize: 18,
                   decoration: task.status == 0
@@ -45,7 +46,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
             subtitle: Text(
               '${_dateFormatter.format(task.date!)} * ${task.priority}',
               style: TextStyle(
-                  fontFamily: 'ProximaNova',
+                  fontFamily: 'Poppins',
                   fontWeight: FontWeight.w800,
                   fontSize: 15,
                   decoration: task.status == 0
@@ -56,7 +57,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
               onChanged: (value) {
                 task.status = value! ? 1 : 0;
                 DatabaseHelper.instance.updateTask(task);
-                _updateTaskList();
+                _updateTaskList("All");
               },
               activeColor: Theme.of(context).primaryColor,
               value: task.status == 1 ? true : false,
@@ -76,17 +77,10 @@ class _TodoListScreenState extends State<TodoListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: SafeArea(
-        child: Drawer(
-          child: Column(
-            children: [Text('Option 1'), Text('Option 2'), Text('Option 3')],
-          ),
-        ),
-      ),
       appBar: AppBar(
-        title: Text('TaskIt',
+        title: Text('DESK.It',
             style: TextStyle(
-              fontFamily: 'ProximaNova',
+              fontFamily: 'Poppins',
               fontWeight: FontWeight.w800,
             )),
       ),
@@ -128,9 +122,9 @@ class _TodoListScreenState extends State<TodoListScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'My Tasks',
+                        'Your ToDos',
                         style: TextStyle(
-                          fontFamily: 'ProximaNova',
+                          fontFamily: 'Poppins',
                           color: Colors.black,
                           fontWeight: FontWeight.w800,
                           fontSize: 30,
@@ -139,10 +133,43 @@ class _TodoListScreenState extends State<TodoListScreen> {
                       SizedBox(
                         height: 10.0,
                       ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          MaterialButton(
+                              onPressed: () {
+                                _updateTaskList("All");
+                              },
+                              child: Text(
+                                'All',
+                                style: TextStyle(color: Colors.deepPurple),
+                              )),
+                          MaterialButton(
+                            onPressed: () {
+                              _updateTaskList("Active");
+                            },
+                            child: Text(
+                              'Active',
+                              style: TextStyle(color: Colors.deepPurple),
+                            ),
+                          ),
+                          MaterialButton(
+                              onPressed: () {
+                                _updateTaskList("Completed");
+                              },
+                              child: Text(
+                                'Completed',
+                                style: TextStyle(color: Colors.deepPurple),
+                              )),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
                       Text(
-                        '$completedTaskCount of ${(snapshot.data as List<Task>).length}',
+                        '$completedTaskCount of ${(snapshot.data as List<Task>).length} tasks have been completed',
                         style: TextStyle(
-                            fontFamily: 'ProximaNova',
+                            fontFamily: 'Poppins',
                             color: Colors.grey,
                             fontSize: 15.0,
                             fontWeight: FontWeight.w600),
