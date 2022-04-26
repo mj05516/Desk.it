@@ -54,14 +54,14 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         DatabaseHelper.instance.updateTask(task);
       }
 
-      widget.updateTaskList!();
+      widget.updateTaskList!("All");
       Navigator.pop(context);
     }
   }
 
   _delete() {
     DatabaseHelper.instance.deleteTask(widget.task!.id);
-    widget.updateTaskList!();
+    widget.updateTaskList!("All");
     Navigator.pop(context);
   }
 
@@ -109,7 +109,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   widget.task == null ? 'Add Your To Do' : 'Update Your To Do',
                   style: TextStyle(
                       fontFamily: 'ProximaNova',
-                      color: Colors.black,
+                      color: Colors.white,
                       fontWeight: FontWeight.w800,
                       fontSize: 40.0),
                 ),
@@ -129,7 +129,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                               labelStyle: TextStyle(
                                 fontSize: 18,
                                 fontFamily: 'ProximaNova',
-                                color: Colors.black,
+                                color: Colors.white,
                                 fontWeight: FontWeight.w800,
                               ),
                               border: OutlineInputBorder(
@@ -153,7 +153,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                               labelStyle: TextStyle(
                                 fontSize: 18,
                                 fontFamily: 'ProximaNova',
-                                color: Colors.black,
+                                color: Colors.white,
                                 fontWeight: FontWeight.w800,
                               ),
                               border: OutlineInputBorder(
@@ -173,7 +173,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                               labelStyle: TextStyle(
                                 fontSize: 18,
                                 fontFamily: 'ProximaNova',
-                                color: Colors.black,
+                                color: Colors.white,
                                 fontWeight: FontWeight.w800,
                               ),
                               border: OutlineInputBorder(
