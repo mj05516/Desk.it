@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "474472846601",
+    "firebase_url": "https://desk-it-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "desk-it",
+    "storage_bucket": "desk-it.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:474472846601:android:2d1e6ab76ddb66a14d6fd8",
+        "android_client_info": {
+          "package_name": "com.seproject.deskit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "474472846601-u5qnmfl9rsan9180b2s94mb7lqlc6s1n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-ZlxpPaYTYghPA85e_mBNA5w7FQdXi3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "474472846601-u5qnmfl9rsan9180b2s94mb7lqlc6s1n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
