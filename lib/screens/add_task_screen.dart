@@ -20,7 +20,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   String? _priority = "Low";
   DateTime? _date = DateTime.now();
   TextEditingController _dateController = TextEditingController();
-  final DateFormat _dateFormatter = DateFormat('MMM dd, yyyy');
+  final DateFormat _dateFormatter = DateFormat('MMM dd, yyyy hh:mm');
   final List<String> _priorities = ["Low", "Medium", "High"];
 
   _handleDatePicker() async {
@@ -33,8 +33,21 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       setState(() {
         _date = date;
       });
-      _dateController.text = _dateFormatter.format(date);
+      // _dateController.text = _dateFormatter.format(date);
     }
+    // ask for time
+    final TimeOfDay? time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: _date!.hour, minute: _date!.minute)
+    );
+    if (time != null) {
+      setState(() {
+        _date = DateTime(_date!.year, _date!.month, _date!.day, time!.hour,
+            time!.minute);
+      });
+      _dateController.text = _dateFormatter.format(_date!);
+    }
+    
   }
 
   _submit() {

@@ -13,7 +13,7 @@ class TodoListScreen extends StatefulWidget {
 class _TodoListScreenState extends State<TodoListScreen> {
   Future<List<Task>>? _taskList;
   late String filter = "All";
-  final DateFormat _dateFormatter = DateFormat('MMM dd, yyyy');
+  final DateFormat _dateFormatter = DateFormat('MMM dd, yyyy hh:mm');
 
   @override
   void initState() {
