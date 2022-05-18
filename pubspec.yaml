@@ -16,6 +16,9 @@ dependencies:
   path_provider: ^2.0.2
   sqflite: ^2.0.0+3
   easy_splash_screen: ^1.0.3
+  firebase_core: ^1.17.0
+  firebase_auth: ^3.3.18
+  modal_progress_hud_nsn: ^0.1.0-nullsafety-1
 
 dev_dependencies:
   flutter_test:

@@ -42,8 +42,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
     if (time != null) {
       setState(() {
-        _date = DateTime(_date!.year, _date!.month, _date!.day, time!.hour,
-            time!.minute);
+        _date = DateTime(_date!.year, _date!.month, _date!.day, time.hour,
+            time.minute);
       });
       _dateController.text = _dateFormatter.format(_date!);
     }

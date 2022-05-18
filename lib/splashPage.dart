@@ -1,6 +1,5 @@
 import 'package:easy_splash_screen/easy_splash_screen.dart';
-import 'package:taskit/screens/todo_list_screen.dart';
-// import '../home.dart';
+import 'package:taskit/screens/registration_screen.dart';
 import 'package:flutter/material.dart';
 
 class SplashPage extends StatefulWidget {
@@ -30,7 +29,7 @@ class _SplashPageState extends State<SplashPage> {
       backgroundColor: Colors.deepPurple,
       showLoader: true,
       loadingText: Text("Loading...", style: TextStyle(color: Colors.white),),
-      navigator: TodoListScreen(),
+      navigator: RegistrationScreen(),
       durationInSeconds: 5,
     );
   }

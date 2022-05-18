@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-// import 'package:taskit/screens/login_screen.dart';
 // import 'package:taskit/screens/todo_list_screen.dart';
 import 'package:taskit/splashPage.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -13,7 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Task.It : Not Just another TodoApp',
+      title: 'Desk.It : Not Just another TodoApp',
       theme: ThemeData.dark().copyWith(
         primaryColor: Colors.deepPurple,
       ),
