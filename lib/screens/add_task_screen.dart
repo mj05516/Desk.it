@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:taskit/helpers/database_helper.dart';
@@ -17,12 +18,25 @@ class AddTaskScreen extends StatefulWidget {
 class _AddTaskScreenState extends State<AddTaskScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  String? _title = "";
+  String? _title;
   String? _priority = "Low";
   DateTime? _date = DateTime.now();
   TextEditingController _dateController = TextEditingController();
   final DateFormat _dateFormatter = DateFormat('MMM dd, yyyy hh:mm');
   final List<String> _priorities = ["Low", "Medium", "High"];
+  late User loginUser;
+
+  void getUser() {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        loginUser = user;
+        print(loginUser.email);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   _handleDatePicker() async {
     final DateTime? date = await showDatePicker(
@@ -38,27 +52,30 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     }
     // ask for time
     final TimeOfDay? time = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay(hour: _date!.hour, minute: _date!.minute)
-    );
+        context: context,
+        initialTime: TimeOfDay(hour: _date!.hour, minute: _date!.minute));
     if (time != null) {
       setState(() {
-        _date = DateTime(_date!.year, _date!.month, _date!.day, time.hour,
-            time.minute);
+        _date = DateTime(
+            _date!.year, _date!.month, _date!.day, time.hour, time.minute);
       });
       _dateController.text = _dateFormatter.format(_date!);
     }
-    
   }
 
   _submit() {
+    getUser();
+    print(loginUser.email);
     print("object");
     FirebaseFirestore.instance.collection('ToDo').add({
-      'title': _title,
-      'priority': _priority,
-      'date': _date,
+      'Title': _title,
+      'Priority': _priority,
+      'Date': _date,
       'status': 0,
+      'user': loginUser.email,
     });
+    // widget.updateTaskList!("All");
+    Navigator.pop(context);
     // if (_formKey.currentState!.validate()) {
     //   _formKey.currentState!.save();
     //   print('$_title, $_priority, $_date');
@@ -103,6 +120,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     _dateController.dispose();
     super.dispose();
   }
+
+  final _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +177,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           validator: (input) => input!.trim().isEmpty
                               ? 'Please Enter a Task Title'
                               : null,
-                          onSaved: (input) => _title = input,
+                          onChanged: (dynamic newValue) {
+                            setState(() {
+                              _title = newValue;
+                            });
+                          },
                           initialValue: _title,
                         ),
                       ),
@@ -233,15 +256,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             color: Theme.of(context).primaryColor,
                             borderRadius: BorderRadius.circular(30.0)),
                         child: TextButton(
-                          onPressed: () => {
-                            print("Add Task"),
-                            FirebaseFirestore.instance.collection('ToDo').add({
-                              'title': _title,
-                              'priority': _priority,
-                              'date': _date,
-                              'status': 0,
-                            })
-                          },
+                          onPressed: () => _submit(),
                           child: Text(
                             widget.task == null ? 'Add' : 'Update',
                             style: TextStyle(

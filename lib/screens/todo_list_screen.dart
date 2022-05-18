@@ -1,4 +1,5 @@
 // import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:taskit/helpers/database_helper.dart';
@@ -14,11 +15,17 @@ class _TodoListScreenState extends State<TodoListScreen> {
   Future<List<Task>>? _taskList;
   late String filter = "All";
   final DateFormat _dateFormatter = DateFormat('MMM dd, yyyy hh:mm');
+  final Stream<QuerySnapshot> _stream =
+      FirebaseFirestore.instance.collection('ToDo').snapshots();
 
   @override
   void initState() {
     super.initState();
     _updateTaskList("All");
+    // add 5 seconds delay to simulate network call
+    // Future.delayed(Duration(seconds: 5), () {
+    //   _updateTaskList("All");
+    // });
   }
 
   _updateTaskList(String filter) {
@@ -32,43 +39,58 @@ class _TodoListScreenState extends State<TodoListScreen> {
       padding: EdgeInsets.symmetric(horizontal: 25),
       child: Column(
         children: [
-          ListTile(
-            title: Text(
-              task.title!,
-              style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w800,
-                  fontSize: 18,
-                  decoration: task.status == 0
-                      ? TextDecoration.none
-                      : TextDecoration.lineThrough),
-            ),
-            subtitle: Text(
-              '${_dateFormatter.format(task.date!)} * ${task.priority}',
-              style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w800,
-                  fontSize: 15,
-                  decoration: task.status == 0
-                      ? TextDecoration.none
-                      : TextDecoration.lineThrough),
-            ),
-            trailing: Checkbox(
-              onChanged: (value) {
-                task.status = value! ? 1 : 0;
-                DatabaseHelper.instance.updateTask(task);
-                _updateTaskList("All");
+          SizedBox(
+            height: 500,
+            child: StreamBuilder<QuerySnapshot>(
+              stream: _stream,
+              builder: (context, snapshot) {
+                return ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      Map<String, dynamic> document = snapshot.data?.docs[index]
+                          .data() as Map<String, dynamic>;
+                      return ListTile(
+                        title: Text(
+                          document['Title'],
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w800,
+                              fontSize: 18,
+                              decoration: task.status == 0
+                                  ? TextDecoration.none
+                                  : TextDecoration.lineThrough),
+                        ),
+                        subtitle: Text(
+                          // convert type Timestamp to DateTime
+                          '${_dateFormatter.format(document['Date'].toDate())} * ${document['Priority']}',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w800,
+                              fontSize: 15,
+                              decoration: task.status == 0
+                                  ? TextDecoration.none
+                                  : TextDecoration.lineThrough),
+                        ),
+                        trailing: Checkbox(
+                          onChanged: (value) {
+                            task.status = value! ? 1 : 0;
+                            DatabaseHelper.instance.updateTask(task);
+                            _updateTaskList("All");
+                          },
+                          activeColor: Theme.of(context).primaryColor,
+                          value: task.status == 1 ? true : false,
+                        ),
+                        onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => AddTaskScreen(
+                                    updateTaskList: _updateTaskList,
+                                    task: task))),
+                      );
+                    });
               },
-              activeColor: Theme.of(context).primaryColor,
-              value: task.status == 1 ? true : false,
             ),
-            onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => AddTaskScreen(
-                        updateTaskList: _updateTaskList, task: task))),
-          ),
-          Divider()
+          )
         ],
       ),
     );
