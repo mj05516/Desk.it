@@ -5,18 +5,18 @@ import 'package:taskit/components/input_field.dart';
 import 'package:taskit/components/rounded_button.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
-class RegistrationScreen extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
   @override
-  _RegistrationScreenState createState() => _RegistrationScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _RegistrationScreenState extends State<RegistrationScreen>
-    with TickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen>
+    with SingleTickerProviderStateMixin {
   late String email, pass;
   final _auth = FirebaseAuth.instance;
-  bool _loading = false;
   late AnimationController controller;
   late Animation animation;
+  bool _loading = false;
 
   @override
   void initState() {
@@ -81,16 +81,15 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                 height: 24.0,
               ),
               RoundedButton(
-                msg: "Register",
+                msg: "Login",
                 color: Colors.blueAccent,
                 func: () async {
                   setState(() {
                     _loading = true;
                   });
                   try {
-                    final newUser = await _auth.createUserWithEmailAndPassword(
+                    final newUser = await _auth.signInWithEmailAndPassword(
                         email: email, password: pass);
-
                     if (newUser != null) {
                       Navigator.push(
                         context,
