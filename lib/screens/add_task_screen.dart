@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:taskit/helpers/database_helper.dart';
@@ -51,25 +52,32 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   }
 
   _submit() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      print('$_title, $_priority, $_date');
+    print("object");
+    FirebaseFirestore.instance.collection('ToDo').add({
+      'title': _title,
+      'priority': _priority,
+      'date': _date,
+      'status': 0,
+    });
+    // if (_formKey.currentState!.validate()) {
+    //   _formKey.currentState!.save();
+    //   print('$_title, $_priority, $_date');
 
-      // Insert Task to Users Database
-      Task task = Task(title: _title, date: _date, priority: _priority);
-      if (widget.task == null) {
-        task.status = 0;
-        DatabaseHelper.instance.insertTask(task);
-      } else {
-        // Update Task to Users Database
-        task.id = widget.task!.id;
-        task.status = widget.task!.status;
-        DatabaseHelper.instance.updateTask(task);
-      }
+    //   // Insert Task to Users Database
+    //   Task task = Task(title: _title, date: _date, priority: _priority);
+    //   if (widget.task == null) {
+    //     task.status = 0;
+    //     DatabaseHelper.instance.insertTask(task);
+    //   } else {
+    //     // Update Task to Users Database
+    //     task.id = widget.task!.id;
+    //     task.status = widget.task!.status;
+    //     DatabaseHelper.instance.updateTask(task);
+    //   }
 
-      widget.updateTaskList!("All");
-      Navigator.pop(context);
-    }
+    //   widget.updateTaskList!("All");
+    //   Navigator.pop(context);
+    // }
   }
 
   _delete() {
@@ -225,7 +233,15 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             color: Theme.of(context).primaryColor,
                             borderRadius: BorderRadius.circular(30.0)),
                         child: TextButton(
-                          onPressed: _submit,
+                          onPressed: () => {
+                            print("Add Task"),
+                            FirebaseFirestore.instance.collection('ToDo').add({
+                              'title': _title,
+                              'priority': _priority,
+                              'date': _date,
+                              'status': 0,
+                            })
+                          },
                           child: Text(
                             widget.task == null ? 'Add' : 'Update',
                             style: TextStyle(
