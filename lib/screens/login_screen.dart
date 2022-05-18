@@ -89,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen>
                   });
                   try {
                     final newUser = await _auth.signInWithEmailAndPassword(
-                        email: email, password: pass);
+                        email: 'a@gmail.com', password: 'ali123');
                     if (newUser != null) {
                       Navigator.push(
                         context,

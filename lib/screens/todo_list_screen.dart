@@ -17,6 +17,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
   final DateFormat _dateFormatter = DateFormat('MMM dd, yyyy hh:mm');
   final Stream<QuerySnapshot> _stream =
       FirebaseFirestore.instance.collection('ToDo').snapshots();
+  int _count = 0;
 
   @override
   void initState() {
@@ -44,50 +45,53 @@ class _TodoListScreenState extends State<TodoListScreen> {
             child: StreamBuilder<QuerySnapshot>(
               stream: _stream,
               builder: (context, snapshot) {
+                _count = snapshot.data!.docs.length;
                 return ListView.builder(
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
-                      Map<String, dynamic> document = snapshot.data?.docs[index]
-                          .data() as Map<String, dynamic>;
-                      return ListTile(
-                        title: Text(
-                          document['Title'],
-                          style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w800,
-                              fontSize: 18,
-                              decoration: task.status == 0
-                                  ? TextDecoration.none
-                                  : TextDecoration.lineThrough),
+                  itemCount: _count,
+                  itemBuilder: (context, index) {
+                    Map<String, dynamic> document = snapshot.data?.docs[index]
+                        .data() as Map<String, dynamic>;
+                    return ListTile(
+                      title: Text(
+                        document['Title'],
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w800,
+                            fontSize: 18,
+                            decoration: document['status'] == 0
+                                ? TextDecoration.none
+                                : TextDecoration.lineThrough),
+                      ),
+                      subtitle: Text(
+                        // convert type Timestamp to DateTime
+                        '${_dateFormatter.format(document['Date'].toDate())} * ${document['Priority']}',
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                            decoration: document['status'] == 0
+                                ? TextDecoration.none
+                                : TextDecoration.lineThrough),
+                      ),
+                      trailing: Checkbox(
+                        onChanged: (value) {
+                          document['status'] = value! ? 1 : 0;
+                          // DatabaseHelper.instance.updateTask(task);
+                          // _updateTaskList("All");
+                        },
+                        activeColor: Theme.of(context).primaryColor,
+                        value: document['status'] == 1 ? true : false,
+                      ),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AddTaskScreen(
+                              updateTaskList: _updateTaskList, task: task),
                         ),
-                        subtitle: Text(
-                          // convert type Timestamp to DateTime
-                          '${_dateFormatter.format(document['Date'].toDate())} * ${document['Priority']}',
-                          style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w800,
-                              fontSize: 15,
-                              decoration: task.status == 0
-                                  ? TextDecoration.none
-                                  : TextDecoration.lineThrough),
-                        ),
-                        trailing: Checkbox(
-                          onChanged: (value) {
-                            task.status = value! ? 1 : 0;
-                            DatabaseHelper.instance.updateTask(task);
-                            _updateTaskList("All");
-                          },
-                          activeColor: Theme.of(context).primaryColor,
-                          value: task.status == 1 ? true : false,
-                        ),
-                        onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => AddTaskScreen(
-                                    updateTaskList: _updateTaskList,
-                                    task: task))),
-                      );
-                    });
+                      ),
+                    );
+                  },
+                );
               },
             ),
           )
@@ -190,7 +194,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
                         height: 10.0,
                       ),
                       Text(
-                        '$completedTaskCount of ${(snapshot.data as List<Task>).length} tasks have been completed',
+                        '$completedTaskCount of $_count tasks have been completed',
                         style: TextStyle(
                             fontFamily: 'Poppins',
                             color: Colors.grey,
