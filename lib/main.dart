@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:taskit/notification_service.dart';
 // import 'package:taskit/screens/login_screen.dart';
 // import 'package:taskit/screens/todo_list_screen.dart';
 import 'package:taskit/splashPage.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  NotificationService().initNotification();
   runApp(MyApp());
 }
 

@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:taskit/helpers/database_helper.dart';
 import 'package:taskit/models/task_model.dart';
+import 'package:taskit/notification_service.dart';
 import 'package:taskit/screens/add_task_screen.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 
 class TodoListScreen extends StatefulWidget {
   @override
@@ -18,6 +21,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
   @override
   void initState() {
     super.initState();
+    tz.initializeTimeZones();
     _updateTaskList("All");
   }
 
@@ -44,7 +48,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
                       : TextDecoration.lineThrough),
             ),
             subtitle: Text(
-              '${_dateFormatter.format(task.date!)} * ${task.priority}',
+              '${_dateFormatter.format(task.date!)} * ${task.priority} * ${task.category}',
               style: TextStyle(
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w800,
@@ -160,6 +164,40 @@ class _TodoListScreenState extends State<TodoListScreen> {
                               },
                               child: Text(
                                 'Completed',
+                                style: TextStyle(color: Colors.deepPurple),
+                              )),
+                        ],
+                      ),
+                      // SizedBox(
+                      //   height: 10.0,
+                      // ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          MaterialButton(
+                              onPressed: () {
+                                _updateTaskList("Personal");
+                                // NotificationService().showNotification(1, "title", "body", 10);
+                              },
+                              child: Text(
+                                'Personal',
+                                style: TextStyle(color: Colors.deepPurple),
+                              )),
+                          MaterialButton(
+                            onPressed: () {
+                              _updateTaskList("Work");
+                            },
+                            child: Text(
+                              'Work',
+                              style: TextStyle(color: Colors.deepPurple),
+                            ),
+                          ),
+                          MaterialButton(
+                              onPressed: () {
+                                _updateTaskList("Miscellaneous");
+                              },
+                              child: Text(
+                                'Miscellaneous',
                                 style: TextStyle(color: Colors.deepPurple),
                               )),
                         ],

@@ -11,11 +11,12 @@ class DatabaseHelper {
 
   static late Database _db;
 
-  String tasksTable = 'task_table';
+  String tasksTable = 'task_table1';
   String colId = 'id';
   String colTitle = 'title';
   String colDate = 'date';
   String colPriority = 'priority';
+  String colCategory = 'category';
   String colStatus = 'status';
 
   Future<Database> get db async {
@@ -25,7 +26,7 @@ class DatabaseHelper {
 
   Future<Database> _initDb() async {
     Directory dir = await getApplicationDocumentsDirectory();
-    String path = dir.path + 'taskit.db';
+    String path = dir.path + 'deskit.db';
     print(path);
     final todoListDb =
         await openDatabase(path, version: 1, onCreate: _createDb);
@@ -34,7 +35,7 @@ class DatabaseHelper {
 
   void _createDb(Database db, int version) async {
     await db.execute(
-        'CREATE TABLE $tasksTable ($colId INTEGER PRIMARY KEY AUTOINCREMENT,$colTitle TEXT, $colDate TEXT, $colPriority TEXT, $colStatus INTEGER)');
+        'CREATE TABLE $tasksTable ($colId INTEGER PRIMARY KEY AUTOINCREMENT,$colTitle TEXT, $colDate TEXT, $colPriority TEXT, $colCategory TEXT, $colStatus INTEGER)');
   }
 
   Future<List<Map<String, dynamic>>> getMapTaskList() async {
@@ -55,6 +56,19 @@ class DatabaseHelper {
         }
       } else if (filter == "Active"){
         if (taskMap[colStatus] == 0){
+          taskList.add(Task.fromMap(taskMap));
+        }
+      }
+      if (filter == "Personal"){
+        if (taskMap[colCategory] == "Personal"){
+          taskList.add(Task.fromMap(taskMap));
+        }
+      } else if (filter == "Work"){
+        if (taskMap[colCategory] == "Work"){
+          taskList.add(Task.fromMap(taskMap));
+        }
+      } else if (filter == "Miscellaneous"){
+        if (taskMap[colCategory] == "Miscellaneous"){
           taskList.add(Task.fromMap(taskMap));
         }
       }

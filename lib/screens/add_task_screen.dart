@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:taskit/helpers/database_helper.dart';
 import 'package:taskit/models/task_model.dart';
+import 'package:taskit/notification_service.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 
 class AddTaskScreen extends StatefulWidget {
   final Function? updateTaskList;
@@ -18,10 +21,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   String? _title = "";
   String? _priority = "Low";
+  String? _category = "Personal";
   DateTime? _date = DateTime.now();
   TextEditingController _dateController = TextEditingController();
-  final DateFormat _dateFormatter = DateFormat('MMM dd, yyyy hh:mm');
+  final DateFormat _dateFormatter = DateFormat('MMM dd, yyyy hh:mm a');
   final List<String> _priorities = ["Low", "Medium", "High"];
+  final List<String> _categories = ["Work", "Personal", "Miscellaneous"];
 
   _handleDatePicker() async {
     final DateTime? date = await showDatePicker(
@@ -37,26 +42,25 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     }
     // ask for time
     final TimeOfDay? time = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay(hour: _date!.hour, minute: _date!.minute)
-    );
+        context: context,
+        initialTime: TimeOfDay(hour: _date!.hour, minute: _date!.minute));
     if (time != null) {
       setState(() {
-        _date = DateTime(_date!.year, _date!.month, _date!.day, time!.hour,
-            time!.minute);
+        _date = DateTime(
+            _date!.year, _date!.month, _date!.day, time.hour, time.minute);
       });
       _dateController.text = _dateFormatter.format(_date!);
     }
-    
   }
 
   _submit() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      print('$_title, $_priority, $_date');
+      print('$_title, $_priority, $_date, $_category');
 
       // Insert Task to Users Database
-      Task task = Task(title: _title, date: _date, priority: _priority);
+      Task task = Task(
+          title: _title, date: _date, priority: _priority, category: _category);
       if (widget.task == null) {
         task.status = 0;
         DatabaseHelper.instance.insertTask(task);
@@ -66,7 +70,20 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         task.status = widget.task!.status;
         DatabaseHelper.instance.updateTask(task);
       }
+      // var zone = tz.getLocation('Africa/Algiers');
+      tz.TZDateTime tzDateTime = tz.TZDateTime.from(
+        _date!,
+        tz.getLocation('Asia/Karachi'),
+      );
+      // get current time in seconds
+      double now = DateTime.now().millisecondsSinceEpoch / 1000;
+      // get time in seconds
+      double rem = _date!.millisecondsSinceEpoch / 1000 - now;
+      // convert rem to int
+      int remInt = rem.toInt();
 
+      // NotificationService().showNotification(1, _title!, _category!, 60);
+      NotificationService().showNotification(1, _title!, _category!, remInt);
       widget.updateTaskList!("All");
       Navigator.pop(context);
     }
@@ -81,11 +98,14 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   @override
   void initState() {
     super.initState();
+
+    tz.initializeTimeZones();
     _dateController.text = _dateFormatter.format(_date!);
 
     if (widget.task != null) {
       _title = widget.task!.title;
       _priority = widget.task!.priority;
+      _category = widget.task!.category;
       _date = widget.task!.date;
     }
   }
@@ -203,7 +223,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                   priority,
                                   style: TextStyle(
                                       fontFamily: 'ProximaNova',
-                                      color: Colors.black,
+                                      color: Colors.white,
                                       fontWeight: FontWeight.w800,
                                       fontSize: 18.0),
                                 ));
@@ -212,6 +232,50 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             print(newValue.runtimeType);
                             setState(() {
                               _priority = newValue.toString();
+                            });
+                          },
+                          // value : _priority
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: DropdownButtonFormField(
+                          isDense: true,
+                          icon: Icon(Icons.arrow_drop_down_circle),
+                          iconSize: 22.0,
+                          iconEnabledColor: Theme.of(context).primaryColor,
+                          style: TextStyle(fontSize: 18),
+                          decoration: InputDecoration(
+                              labelText: 'Category',
+                              labelStyle: TextStyle(
+                                fontSize: 18,
+                                fontFamily: 'ProximaNova',
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                              ),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0))),
+                          validator: (dynamic input) =>
+                              input.toString().trim().isEmpty
+                                  ? 'Please Select a Category'
+                                  : null,
+                          // onSaved: (input) => _priority = input.toString(),
+                          items: _categories.map((String category) {
+                            return DropdownMenuItem(
+                                value: category,
+                                child: new Text(
+                                  category,
+                                  style: TextStyle(
+                                      fontFamily: 'ProximaNova',
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 18.0),
+                                ));
+                          }).toList(),
+                          onChanged: (dynamic newValue) {
+                            print(newValue.runtimeType);
+                            setState(() {
+                              _category = newValue.toString();
                             });
                           },
                           // value : _priority
